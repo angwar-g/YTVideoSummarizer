@@ -10,10 +10,11 @@ genai.configure(api_key=os.getenv('GOOGLE_API_KEY'))
 prompt = '''You are a YouTube video summarizer. 
 You will be taking the transcript the transcript text of a video, 
 summarizing the entire video and providing the important summary of the video in bullet points in around 200-300 words. 
+Simply provide the summary without any other comments. Do not say here's the summary or anything like that.
 The transcript text is as follows: '''
 
 def generate_gemini_content(transcript_text, prompt):
-    model = genai.GenerativeModel("gemini-pro")
+    model = genai.GenerativeModel("gemini-2.0-flash")
     response = model.generate_content(prompt+transcript_text)
     
     try:
@@ -36,10 +37,10 @@ youtube_link = st.text_input("Enter the YouTube video link:")
 
 if youtube_link:
     video_id = youtube_link.split('=')[1]
-    st.image(f"https://img.youtube.com/vi/{video_id}/0.jpg", use_column_width=True)
+    st.image(f"https://img.youtube.com/vi/{video_id}/0.jpg", use_container_width=True)
 
 if st.button("Summarize Video"):
-    with st.spinner('Extracting transcript and generating summary...'):
+    with st.spinner('Generating summary...'):
         transcript_text = extract_transcript(youtube_link)
 
         if transcript_text:
