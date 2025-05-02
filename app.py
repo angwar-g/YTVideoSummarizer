@@ -4,6 +4,7 @@ load_dotenv()   # load environment variables from .env file
 import google.generativeai as genai
 import os
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api._errors import (TranscriptsDisabled, NoTranscriptFound, VideoUnavailable)
 
 genai.configure(api_key=os.getenv('GOOGLE_API_KEY'))
 
@@ -29,8 +30,15 @@ def extract_transcript(video_url):
         transcript = " ".join([item['text'] for item in transcript_list])
         return transcript
         
+    except (TranscriptsDisabled, NoTranscriptFound):
+        st.error("Subtitles are disabled or unavailable for this video. Try another video.")
+        return None
+    except VideoUnavailable:
+        st.error("This video is unavailable.")
+        return None
     except Exception as e:
-        raise e
+        st.error(f"An unexpected error occurred. Try another video.")
+        return None
 
 st.title("YouTube Video Summarizer")
 youtube_link = st.text_input("Enter the YouTube video link:")
